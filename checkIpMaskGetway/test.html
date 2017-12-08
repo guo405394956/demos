@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IP、子网掩码、网关逻辑验证</title>
+    <style>
+        .main{
+            margin: 0 auto;
+            width: 100%;
+        }        
+        em{
+            color: red;
+            padding: 5px;
+        }
+        div{
+            height: 30px;
+            line-height: 30px;
+        }
+        div label{
+            position: relative;
+            width: 100px;
+            display: inline-block;
+        }
+
+        .button{
+            margin-left:105px;
+            margin-top:10px;
+        }
+    </style>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.1.min.js"></script>
+    <script type="text/javascript">
+        function check(){
+            var ipStr = $('#J_ip').val();
+            var maskStr = $('#J_mask').val();
+            var getwayStr = $('#J_getway').val();
+
+            /* 非空验证 */
+            if(ipStr == '' || maskStr == '' || getwayStr == ''){
+                alert('IP、子网掩码、网关都是必填项，请确认！');
+                return;
+            }
+
+            /* 格式合法性验证 */
+            if(!validIp(ipStr)){
+                alert('IP格式不正确，请确认！');
+                return;
+            }
+            if(!validIp(maskStr)){
+                alert('子网掩码格式不正确，请确认！');
+                return;
+            }
+            if(!validMaskCC(maskStr)){
+                alert('子网掩码无效，请确认！');
+                return;
+            }
+            if(!validIp(getwayStr)){
+                alert('网关格式不正确，请确认！');
+                return;
+            }
+
+            /* 逻辑合法性验证 */
+            if(!validGetWay(ipStr,maskStr,getwayStr)){
+                alert('IP地址与子网掩码、网关地址不匹配，请确认！');
+                return;
+            }
+
+
+        };
+
+        /*
+        *  validIp  IP验证
+        *  param: str 需要验证的数据
+        */
+        function validIp(Str){
+            var regIp=/^(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$/; 
+            return regIp.test(Str);
+        };
+
+        /*
+        *  validMask 子网掩码验证  
+        *  param: str 需要验证的数据
+        */
+        function validMask(Str){
+            var str_arr = Str.split(".");
+            var res0 = polishing(parseInt(str_arr[0]).toString(2),8);
+            var res1 = polishing(parseInt(str_arr[1]).toString(2),8);
+            var res2 = polishing(parseInt(str_arr[2]).toString(2),8);
+            var res3 = polishing(parseInt(str_arr[3]).toString(2),8);
+            var new_str = res0 + res1 + res2 + res3;
+            return /^1+0*$/.test(new_str);
+            // var new_str_reverse = strReverse(new_str);
+            // var str_0_location = new_str.indexOf("0");
+            // var str_1_location = new_str_reverse.indexOf("1");
+            // return (str_0_location + str_1_location == 32) ? true : false ;
+        };
+
+        function validMaskCC(str){
+            var maskInByte = str.split('.').map(function (data) {
+                var s = '';
+                var x = parseInt(data);
+                for (var i = 0; i < 8; i++) {
+                    s += ((x >> (7 - i)) & 0x1);
+                }
+                return s;
+            }).reduce(function (x,y) { return x + y;});
+            return /^1+0*$/.test(maskInByte);
+        };
+
+        /*
+        * 数字补齐（高位补齐）
+        * param：num 输入的数字
+        * param：n 要补齐的位数
+        */
+        function polishing(num, n) {  
+            var len = num.toString().length;  
+            while(len < n) {  
+                num = "0" + num;  
+                len++;  
+            }  
+            return num;  
+        }  
+
+        /*
+        * strReverse 利用字符串的reverse倒序函数实现字符倒序
+        * text 需要反转的字符
+        */
+        function strReverse(text){
+            return text.split('').reverse().join('');
+        }
+
+        /*
+        *  validGetWay  根据IP和子网掩码校验网关是否有效
+        *  param：ip IP地址 
+        *  param：mask 子网掩码
+        *  param：getway 需要验证的网关
+        */
+        function validGetWay(ip,mask,getway){
+            if(ip == getway){
+                return false;
+            }
+            var ip_arr = ip.split(".");
+            var mask_arr = mask.split(".");
+            var getway_arr = getway.split(".");
+            
+            var res0 = parseInt(ip_arr[0]) & parseInt(mask_arr[0]);
+            var res1 = parseInt(ip_arr[1]) & parseInt(mask_arr[1]);
+            var res2 = parseInt(ip_arr[2]) & parseInt(mask_arr[2]);
+            var res3 = parseInt(ip_arr[3]) & parseInt(mask_arr[3]);
+            
+            var res0_gw = parseInt(getway_arr[0]) & parseInt(mask_arr[0]);
+            var res1_gw = parseInt(getway_arr[1]) & parseInt(mask_arr[1]);
+            var res2_gw = parseInt(getway_arr[2]) & parseInt(mask_arr[2]);
+            var res3_gw = parseInt(getway_arr[3]) & parseInt(mask_arr[3]);
+
+            return (res0==res0_gw && res1==res1_gw && res2==res2_gw  && res3==res3_gw) ? true : false;
+        };
+
+    </Script>
+</head>
+<body>
+    <div class="main">
+        <div>
+            <label><em>*</em>IP：</label>
+            <input type="text" id="J_ip" value=""/>
+        </div>
+        <div>
+            <label><em>*</em>子网掩码：</label>
+            <input type="text" id="J_mask" value=""/>
+        </div>
+        <div>
+            <label><em>*</em>网关：</label>
+            <input type="text" id="J_getway" value=""/>
+        </div>
+        <div>            
+            <input type="button" class="button" value="校验" onclick="check()"/>
+        </div>
+    </div>
+
+</body>
+</html>
