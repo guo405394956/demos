@@ -63,6 +63,14 @@
                 alert('IP地址与子网掩码、网关地址不匹配，请确认！');
                 return;
             }
+            if(!validIpByMask(ipStr,maskStr)){
+                alert('IP地址不能为子网地址或广播地址，请确认！');
+                return;
+            }
+            if(!validIpByMask(getwayStr,maskStr)){
+                alert('网关地址不能为子网地址或广播地址，请确认！');
+                return;
+            }
 
 
         };
@@ -74,6 +82,23 @@
         function validIp(Str){
             var regIp=/^(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$/; 
             return regIp.test(Str);
+        };
+
+        /*
+        *  validIpByMask 根据子网掩码验证IP和网关地址不能为子网地址和广播地址（IP范围中最大和最小的）  
+        *  param: str ip
+        *  param: mask 设定的子网掩码范围
+        */
+        function validIpByMask(ip,mask){
+            var ip_arr = ip.split(".");
+            var mask_arr = mask.split(".");            
+            var res0 = parseInt(ip_arr[0]) & parseInt(mask_arr[0]);
+            var res1 = parseInt(ip_arr[1]) & parseInt(mask_arr[1]);
+            var res2 = parseInt(ip_arr[2]) & parseInt(mask_arr[2]);
+            var res3 = parseInt(ip_arr[3]) & parseInt(mask_arr[3]);
+            var new_str_start = res0 + '.' + res1 + '.' + res2 + '.' + res3;
+            var new_str_end = res0 + '.' + res1 + '.' + res2 + '.255';
+            return (ip!=new_str_start && ip!=new_str_end) ? true:false;
         };
 
         /*
