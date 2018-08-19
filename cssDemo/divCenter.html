@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>div的水平居中</title>
+    <link href="classLevel.css" rel="stylesheet" type="text/css" />
+    <style>
+        @import "classLevel_import.css";
+        .boxMain1{
+            width: 1000px;
+            height: 100px;
+            margin: auto;
+            background: #eeefff;
+        }
+
+        .boxMain2{
+            position: relative;		/* 相对定位或绝对定位均可 */
+            width:500px;
+            height:100px;
+            top: 50%;
+            left: 50%;
+            margin: -150px 0 0 -250px;     	/* 外边距为自身宽高的一半 */
+            background-color: pink;	 
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <div class="boxMain1"> 
+        div水平居中1
+    </div>
+
+    <div class="boxMain2"> 
+        div水平居中2
+    </div>
+
+</body>
+</html>
