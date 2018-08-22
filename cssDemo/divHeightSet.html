@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>css跳坑----元素竖向的百分比设定是根据父元素的宽度而不是高度</title>
+    <link href="classLevel.css" rel="stylesheet" type="text/css" />
+    <style>
+        @import "classLevel_import.css";
+        .boxMain1{
+            width: 1000px;
+            height: 100px;
+            margin: auto;
+            background: #eeefff;
+        }
+
+        .boxMain2{
+            width: 20%;
+            height: 50%;
+            padding-bottom: 10%;
+            margin-bottom: 10%;
+            background: #223344;
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <div class="boxMain1"> 
+        <div class="boxMain2"> 
+            div水平居中2
+        </div> 
+    </div>
+</body>
+</html>
